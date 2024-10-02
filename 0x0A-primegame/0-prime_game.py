@@ -14,7 +14,6 @@ def is Winner(x, nums):
     ben = 0
     maria = 0
 
-
     a = [1 for x in range(sorted(nums)[-1] + 1)]
     a[0], a[1] = 0, 0
     for i in range(2, len(a)):
