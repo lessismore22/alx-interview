@@ -2,41 +2,41 @@
 """ 0. Prime Game """
 
 
-def is Winner(x, nums):
-    """x rounds
-    nums - numbers list
-    """
-    if x <= 0 or nums is None:
-        return None
-    if x != len(nums):
+def is_winner(x, nums):
+    if x <= 0 or not nums:
         return None
 
-    ben = 0
-    maria = 0
+    # Step 1: Precompute the prime numbers up to the maximum value in nums
+    max_num = max(nums)
+    primes = [True] * (max_num + 1)
+    primes[0] = primes[1] = False  # 0 and 1 are not primes
 
-    a = [1 for x in range(sorted(nums)[-1] + 1)]
-    a[0], a[1] = 0, 0
-    for i in range(2, len(a)):
-        rm_multiples(a, i)
+    for i in range(2, int(max_num ** 0.5) + 1):
+        if primes[i]:
+            for j in range(i * i, max_num + 1, i):
+                primes[j] = False
 
-    for i in nums:
-        if sum(a[0:i + 1]) % 2 == 0:
-            ben += 1
+    # Step 2: Precompute the number of prime moves possible for each n
+    prime_moves = [0] * (max_num + 1)
+
+    for i in range(1, max_num + 1):
+        prime_moves[i] = prime_moves[i - 1] + (1 if primes[i] else 0)
+
+    # Step 3: Simulate the game for each round in nums
+    maria_wins = 0
+    ben_wins = 0
+
+    for n in nums:
+        # Count of prime moves determines the winner: Maria goes first
+        if prime_moves[n] % 2 == 0:
+            ben_wins += 1  # Even number of moves means Ben wins
         else:
-            maria += 1
-    if ben > maria:
-        return "Ben"
-    if maria > ben:
+            maria_wins += 1  # Odd number of moves means Maria wins
+
+    # Step 4: Determine the overall winner
+    if maria_wins > ben_wins:
         return "Maria"
-    return None
-
-
-def rm_multiples(ls, x):
-    """removes multiple
-    of primes
-    """
-    for i in range(2, len(ls)):
-        try:
-            ls[i * x] = 0
-        except (ValueError, IndexError):
-            break
+    elif ben_wins > maria_wins:
+        return "Ben"
+    else:
+        return None
